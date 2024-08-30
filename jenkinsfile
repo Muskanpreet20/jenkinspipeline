@@ -47,7 +47,11 @@ pipeline {
     post {
         always {
             echo 'Sending email notifications...'
-            // Configure email notifications here
+            emailext (
+                subject: "Pipeline Result: ${currentBuild.fullDisplayName}",
+                body: "Build result: ${currentBuild.result}\nCheck console output at ${env.BUILD_URL}",
+                to: 'muskkann.20@gmail.com'
+            )
         }
     }
 }
