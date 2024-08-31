@@ -4,54 +4,89 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the code...'
-                // Example: sh 'mvn clean install'
             }
         }
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running tests...'
-                // Example: sh 'mvn test'
+            }
+            post {
+                success {
+                    emailext (
+                        to: 'muskkann.20@gmail.com',
+                        subject: "SUCCESS: Unit and Integration Tests - Build #${env.BUILD_NUMBER}",
+                        body: "The test stage completed successfully. Check the attached logs for details.",
+                        attachLog: true
+                    )
+                }
+                failure {
+                    emailext (
+                        to: 'muskkann.20@gmail.com',
+                        subject: "FAILURE: Unit and Integration Tests - Build #${env.BUILD_NUMBER}",
+                        body: "The test stage failed. Check the attached logs for details.",
+                        attachLog: true
+                    )
+                }
+                always {
+                    emailext (
+                        to: 'muskkann.20@gmail.com',
+                        subject: "Unit and Integration Tests - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+                        body: "The test stage has finished with status: ${currentBuild.currentResult}. Check the attached logs for details.",
+                        attachLog: true
+                    )
+                }
             }
         }
         stage('Code Analysis') {
             steps {
                 echo 'Analyzing the code...'
-                // Example: sh 'mvn sonar:sonar'
             }
         }
         stage('Security Scan') {
             steps {
                 echo 'Performing security scan...'
-                // Example: sh 'dependency-check.sh --scan .'
+            }
+            post {
+                success {
+                    emailext (
+                        to: 'muskkann.20@gmail.com',
+                        subject: "SUCCESS: Security Scan - Build #${env.BUILD_NUMBER}",
+                        body: "The security scan completed successfully. Check the attached logs for details.",
+                        attachLog: true
+                    )
+                }
+                failure {
+                    emailext (
+                        to: 'muskkann.20@gmail.com',
+                        subject: "FAILURE: Security Scan - Build #${env.BUILD_NUMBER}",
+                        body: "The security scan failed. Check the attached logs for details.",
+                        attachLog: true
+                    )
+                }
+                always {
+                    emailext (
+                        to: 'muskkann.20@gmail.com',
+                        subject: "Security Scan - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+                        body: "The security scan stage has finished with status: ${currentBuild.currentResult}. Check the attached logs for details.",
+                        attachLog: true
+                    )
+                }
             }
         }
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to staging...'
-                // Example: sh 'scp target/myapp.jar user@staging-server:/apps'
             }
         }
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running staging tests...'
-                // Add commands for integration testing on staging
             }
         }
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to production...'
-                // Example: sh 'scp target/myapp.jar user@production-server:/apps'
             }
-        }
-    }
-    post {
-        always {
-            echo 'Sending email notifications...'
-            emailext (
-                subject: "Pipeline Result: ${currentBuild.fullDisplayName}",
-                body: "Build result: ${currentBuild.result}\nCheck console output at ${env.BUILD_URL}",
-                to: 'muskaankaur201003@icloud.com'
-            )
         }
     }
 }
